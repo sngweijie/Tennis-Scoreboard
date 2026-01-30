@@ -31,6 +31,8 @@ let modalConfirmBtn = document.getElementById("modal-confirm")
 let modalCancelBtn = document.getElementById("modal-cancel")
 
 let gameStarted = false
+let lastFocusedEl = null
+let history = []
 
 let p1Point = 0,p2Point = 0,p1Games = 0,p2Games = 0, p1Sets = 0, p2Sets = 0, p1PrevSets1 = 
 0, p1PrevSets2 = 0, p2PrevSets1 = 0, p2PrevSets2 = 0, completeSets = 0 
@@ -52,6 +54,22 @@ function updatePrevSets() {
     p2PrevSets2El.textContent = p2PrevSets2
 }
 
+function pushHistory() {
+    history.push({
+        p1Point,
+        p2Point,
+        p1Games,
+        p2Games,
+        p1Sets,
+        p2Sets,
+        p1PrevSets1,
+        p1PrevSets2,
+        p2PrevSets1,
+        p2PrevSets2,
+        completeSets
+    })
+}
+
 function lockPlayerNames() {
     p1NameInput.disabled = true
     p2NameInput.disabled = true
@@ -64,6 +82,7 @@ function unlockPlayerNames() {
 }
 
 function openModal() {
+    lastFocusedEl = document.activeElement
     modalBackdrop.classList.add("is-open")
     modalBackdrop.setAttribute("aria-hidden", "false")
     modalConfirmBtn.focus()
@@ -72,6 +91,11 @@ function openModal() {
 function closeModal() {
     modalBackdrop.classList.remove("is-open")
     modalBackdrop.setAttribute("aria-hidden", "true")
+    if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
+        lastFocusedEl.focus()
+        lastFocusedEl = null
+        return
+    }
     startGameBtn.focus()
 }
 
@@ -118,6 +142,7 @@ function gameP2(){
 
 //increase player 1 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP1() {
+    pushHistory()
     if(p1Point==30){
         p1Point += 10
     } else if (p1Point==40){
@@ -139,6 +164,7 @@ function addPointP1() {
 
 //increase player 2 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP2() {
+    pushHistory()
     if(p2Point==30){
         p2Point += 10
     } else if (p2Point==40){
@@ -199,14 +225,59 @@ modalBackdrop.addEventListener("click", (event) => {
 })
 
 document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && modalBackdrop.classList.contains("is-open")) {
+    if (!modalBackdrop.classList.contains("is-open")) {
+        return
+    }
+    if (event.key === "Escape") {
         closeModal()
+        return
+    }
+    if (event.key !== "Tab") {
+        return
+    }
+
+    const focusable = modalBackdrop.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    if (focusable.length === 0) {
+        event.preventDefault()
+        return
+    }
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    const isShift = event.shiftKey
+
+    if (isShift && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+        return
+    }
+    if (!isShift && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
     }
 })
 
 //undo previous action (e.g decrease point and reverse set,game values)
 function undo() {
-    
+    if (history.length === 0) {
+        return
+    }
+    const prev = history.pop()
+    p1Point = prev.p1Point
+    p2Point = prev.p2Point
+    p1Games = prev.p1Games
+    p2Games = prev.p2Games
+    p1Sets = prev.p1Sets
+    p2Sets = prev.p2Sets
+    p1PrevSets1 = prev.p1PrevSets1
+    p1PrevSets2 = prev.p1PrevSets2
+    p2PrevSets1 = prev.p2PrevSets1
+    p2PrevSets2 = prev.p2PrevSets2
+    completeSets = prev.completeSets
+    updateScore()
+    updatePrevSets()
 }
 
 
