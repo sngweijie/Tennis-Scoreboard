@@ -7,7 +7,7 @@
 //new game button resets *done*
 //new game confirmation popup
 //maybe can allow players to enter their name
-//timer
+//timer *done*
 //highlight player who is serving
 //show toast feedback like "last point undone"
 //add tiebreak condition
@@ -25,6 +25,8 @@ let p2PrevSets1El = document.getElementById("p2-prev-sets-1")
 let p2PrevSets2El = document.getElementById("p2-prev-sets-2")
 let p1NameInput = document.getElementById("p1-name")
 let p2NameInput = document.getElementById("p2-name")
+let p1ServeBadge = document.getElementById("p1-serve-badge")
+let p2ServeBadge = document.getElementById("p2-serve-badge")
 let startGameBtn = document.getElementById("start-game-btn")
 let modalBackdrop = document.getElementById("modal-backdrop")
 let modalConfirmBtn = document.getElementById("modal-confirm")
@@ -38,6 +40,7 @@ let timerStart = null
 let timerIntervalId = null
 let timerElapsedMs = 0
 let timerRunning = false
+let server = "p1"
 
 let p1Point = 0,p2Point = 0,p1Games = 0,p2Games = 0, p1Sets = 0, p2Sets = 0, p1PrevSets1 = 
 0, p1PrevSets2 = 0, p2PrevSets1 = 0, p2PrevSets2 = 0, completeSets = 0 
@@ -71,7 +74,8 @@ function pushHistory() {
         p1PrevSets2,
         p2PrevSets1,
         p2PrevSets2,
-        completeSets
+        completeSets,
+        server
     })
 }
 
@@ -84,6 +88,19 @@ function unlockPlayerNames() {
     p1NameInput.disabled = false
     p2NameInput.disabled = false
     p1NameInput.focus()
+}
+
+function updateServerUI() {
+    const p1Serving = server === "p1"
+    p1NameInput.classList.toggle("is-serving", p1Serving)
+    p2NameInput.classList.toggle("is-serving", !p1Serving)
+    p1ServeBadge.classList.toggle("is-hidden", !p1Serving)
+    p2ServeBadge.classList.toggle("is-hidden", p1Serving)
+}
+
+function toggleServer() {
+    server = server === "p1" ? "p2" : "p1"
+    updateServerUI()
 }
 
 function openModal() {
@@ -127,6 +144,7 @@ function gameP1(){
         
     }
     p1Point = p2Point = 0
+    toggleServer()
 }
 function gameP2(){
     p2Games += 1
@@ -147,6 +165,7 @@ function gameP2(){
         
     }
     p1Point = p2Point = 0
+    toggleServer()
 }
 
 //increase player 1 points accordingly (15, 30 ,40, game, duece, adv, game)
@@ -199,6 +218,8 @@ function newGame() {
     p1Point = p2Point = p1Games = p2Games = p1Sets = p2Sets = p1PrevSets1 = 
     p1PrevSets2 = p2PrevSets1 = p2PrevSets2 = completeSets = 0
     history = []
+    server = "p1"
+    updateServerUI()
     resetTimer()
     updateScore()
     updatePrevSets()
@@ -282,6 +303,8 @@ function startTimer() {
     updateTimerDisplay()
 }
 
+updateServerUI()
+
 function resetTimer() {
     if (timerIntervalId) {
         clearInterval(timerIntervalId)
@@ -350,8 +373,10 @@ function undo() {
     p2PrevSets1 = prev.p2PrevSets1
     p2PrevSets2 = prev.p2PrevSets2
     completeSets = prev.completeSets
+    server = prev.server
     updateScore()
     updatePrevSets()
+    updateServerUI()
 }
 
 

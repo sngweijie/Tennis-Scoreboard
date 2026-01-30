@@ -35,10 +35,16 @@
                         <h5 class = "header">PLAYER</h5>
                     </div>
                     <div>
-                        <input id="p1-name" class="player-input" type="text" placeholder="Enter name" aria-label="Player 1 name">
+                        <div class="player-slot">
+                            <input id="p1-name" class="player-input" type="text" placeholder="Enter name" aria-label="Player 1 name">
+                            <div id="p1-serve-badge" class="serve-badge is-hidden">SERVING</div>
+                        </div>
                     </div>
                     <div>
-                        <input id="p2-name" class="player-input" type="text" placeholder="Enter name" aria-label="Player 2 name">
+                        <div class="player-slot">
+                            <input id="p2-name" class="player-input" type="text" placeholder="Enter name" aria-label="Player 2 name">
+                            <div id="p2-serve-badge" class="serve-badge is-hidden">SERVING</div>
+                        </div>
                     </div>
                 </div>
                 <div class="container">
@@ -88,6 +94,7 @@
             </div>
             <div id="board-btm">
                 <button id="start-game-btn" class="new-game-btn" onclick="startOrNewGame()">Start Game</button> 
+                <button class="serve-btn" onclick="toggleServer()">Toggle Serve</button>
                 <button class="undo-btn" onclick="undo()">↩ Undo</button>
             </div>
         </div>
