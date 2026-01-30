@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <h1 id="title">Tennis Scoreboard</h1>
+        <div id="board">
+            <div class="container">
+                <div>
+                    <h5 class = "header">PREVIOUS SETS</h5>
+                </div>
+                <div class="prev-sets">
+                    <div class="counter">
+                        <span class="counter-value" id="p1-prev-sets-1">0</span>
+                    </div>
+                    <div class="counter">
+                        <span class="counter-value" id="p1-prev-sets-2">0</span>
+                    </div>
+                </div>
+                <div class="prev-sets">
+                    <div class="counter">
+                        <span class="counter-value" id="p2-prev-sets-1">0</span>
+                    </div>
+                    <div class="counter">
+                        <span class="counter-value" id="p2-prev-sets-2">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div>
+                    <h5 class = "header">PLAYER</h5>
+                </div>
+                <div>
+                    <h3 class = "player">PLAYER 1</h3>
+                </div>
+                <div>
+                    <h3 class = "player">PLAYER 2</h3>
+                </div>
+            </div>
+            <div class="container">
+                <div>
+                    <h5 class = "header">SETS</h5>
+                </div>
+                <div>
+                    <h3 id="p1-sets" class = "counter">0</h3>
+                </div>
+                <div>
+                    <h3 id="p2-sets" class = "counter">0</h3>
+                </div>
+            </div>
+            <div class="container">
+                <div>
+                    <h5 class = "header">GAMES</h5>
+                </div>
+                <div>
+                    <h3 id="p1-games" class = "counter">0</h3>
+                </div>
+                <div>
+                    <h3 id="p2-games" class = "counter">0</h3>
+                </div>
+            </div>
+            <div class="container">
+                <div>
+                    <h5 class = "header">POINTS</h5>
+                </div>
+                <div>
+                    <h3 id="p1-point" class = "counter points">0</h3>
+                </div>
+                <div>
+                    <h3 id="p2-point" class = "counter points">0</h3>
+                </div>
+            </div>
+            <div class="container">
+                <div>
+                   <h5 class = "header visually-hidden" aria-hidden="true">Award Points</h5>  
+                </div>
+                <div>
+                    <button class="point-btn counter" onclick="addPointP1()">Point</button>
+                </div>
+                <div>
+                    <button class="point-btn counter" onclick="addPointP2()">Point</button>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <button class="new-game-btn" onclick="newGame()">New Game</button> 
+           <button class="undo-btn">↩ Undo</button>
+        </div>
+        <script src="index.js"></script>
+    </body>
+</html>
