@@ -23,6 +23,14 @@ let p1PrevSets1El = document.getElementById("p1-prev-sets-1")
 let p1PrevSets2El = document.getElementById("p1-prev-sets-2")
 let p2PrevSets1El = document.getElementById("p2-prev-sets-1")
 let p2PrevSets2El = document.getElementById("p2-prev-sets-2")
+let p1NameInput = document.getElementById("p1-name")
+let p2NameInput = document.getElementById("p2-name")
+let startGameBtn = document.getElementById("start-game-btn")
+let modalBackdrop = document.getElementById("modal-backdrop")
+let modalConfirmBtn = document.getElementById("modal-confirm")
+let modalCancelBtn = document.getElementById("modal-cancel")
+
+let gameStarted = false
 
 let p1Point = 0,p2Point = 0,p1Games = 0,p2Games = 0, p1Sets = 0, p2Sets = 0, p1PrevSets1 = 
 0, p1PrevSets2 = 0, p2PrevSets1 = 0, p2PrevSets2 = 0, completeSets = 0 
@@ -42,6 +50,29 @@ function updatePrevSets() {
     p1PrevSets2El.textContent = p1PrevSets2
     p2PrevSets1El.textContent = p2PrevSets1
     p2PrevSets2El.textContent = p2PrevSets2
+}
+
+function lockPlayerNames() {
+    p1NameInput.disabled = true
+    p2NameInput.disabled = true
+}
+
+function unlockPlayerNames() {
+    p1NameInput.disabled = false
+    p2NameInput.disabled = false
+    p1NameInput.focus()
+}
+
+function openModal() {
+    modalBackdrop.classList.add("is-open")
+    modalBackdrop.setAttribute("aria-hidden", "false")
+    modalConfirmBtn.focus()
+}
+
+function closeModal() {
+    modalBackdrop.classList.remove("is-open")
+    modalBackdrop.setAttribute("aria-hidden", "true")
+    startGameBtn.focus()
 }
 
 function gameP1(){
@@ -135,6 +166,43 @@ function newGame() {
     updateScore()
     updatePrevSets()
 }
+
+function startOrNewGame() {
+    if (!gameStarted) {
+        if (!p1NameInput.value.trim() || !p2NameInput.value.trim()) {
+            return
+        }
+        lockPlayerNames()
+        startGameBtn.textContent = "New Game"
+        gameStarted = true
+        return
+    }
+    openModal()
+}
+
+modalConfirmBtn.addEventListener("click", () => {
+    newGame()
+    unlockPlayerNames()
+    startGameBtn.textContent = "Start Game"
+    gameStarted = false
+    closeModal()
+})
+
+modalCancelBtn.addEventListener("click", () => {
+    closeModal()
+})
+
+modalBackdrop.addEventListener("click", (event) => {
+    if (event.target === modalBackdrop) {
+        closeModal()
+    }
+})
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modalBackdrop.classList.contains("is-open")) {
+        closeModal()
+    }
+})
 
 //undo previous action (e.g decrease point and reverse set,game values)
 function undo() {
