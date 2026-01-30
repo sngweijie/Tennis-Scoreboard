@@ -29,10 +29,15 @@ let startGameBtn = document.getElementById("start-game-btn")
 let modalBackdrop = document.getElementById("modal-backdrop")
 let modalConfirmBtn = document.getElementById("modal-confirm")
 let modalCancelBtn = document.getElementById("modal-cancel")
+let timerDisplayEl = document.getElementById("timer-display")
 
 let gameStarted = false
 let lastFocusedEl = null
 let history = []
+let timerStart = null
+let timerIntervalId = null
+let timerElapsedMs = 0
+let timerRunning = false
 
 let p1Point = 0,p2Point = 0,p1Games = 0,p2Games = 0, p1Sets = 0, p2Sets = 0, p1PrevSets1 = 
 0, p1PrevSets2 = 0, p2PrevSets1 = 0, p2PrevSets2 = 0, completeSets = 0 
@@ -86,11 +91,15 @@ function openModal() {
     modalBackdrop.classList.add("is-open")
     modalBackdrop.setAttribute("aria-hidden", "false")
     modalConfirmBtn.focus()
+    pauseTimer()
 }
 
 function closeModal() {
     modalBackdrop.classList.remove("is-open")
     modalBackdrop.setAttribute("aria-hidden", "true")
+    if (gameStarted) {
+        resumeTimer()
+    }
     if (lastFocusedEl && typeof lastFocusedEl.focus === "function") {
         lastFocusedEl.focus()
         lastFocusedEl = null
@@ -189,6 +198,8 @@ function addPointP2() {
 function newGame() {
     p1Point = p2Point = p1Games = p2Games = p1Sets = p2Sets = p1PrevSets1 = 
     p1PrevSets2 = p2PrevSets1 = p2PrevSets2 = completeSets = 0
+    history = []
+    resetTimer()
     updateScore()
     updatePrevSets()
 }
@@ -199,6 +210,7 @@ function startOrNewGame() {
             return
         }
         lockPlayerNames()
+        startTimer()
         startGameBtn.textContent = "New Game"
         gameStarted = true
         return
@@ -258,6 +270,68 @@ document.addEventListener("keydown", (event) => {
         first.focus()
     }
 })
+
+function startTimer() {
+    timerElapsedMs = 0
+    timerStart = Date.now()
+    if (timerIntervalId) {
+        clearInterval(timerIntervalId)
+    }
+    timerIntervalId = setInterval(updateTimerDisplay, 1000)
+    timerRunning = true
+    updateTimerDisplay()
+}
+
+function resetTimer() {
+    if (timerIntervalId) {
+        clearInterval(timerIntervalId)
+        timerIntervalId = null
+    }
+    timerStart = null
+    timerElapsedMs = 0
+    timerRunning = false
+    timerDisplayEl.textContent = "00:00:00"
+}
+
+function updateTimerDisplay() {
+    if (!timerStart && timerElapsedMs === 0) {
+        timerDisplayEl.textContent = "00:00:00"
+        return
+    }
+    const liveElapsedMs = timerRunning && timerStart ? Date.now() - timerStart : 0
+    const totalSeconds = Math.floor((timerElapsedMs + liveElapsedMs) / 1000)
+    const hours = Math.floor(totalSeconds / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    const hh = String(hours).padStart(2, "0")
+    const mm = String(minutes).padStart(2, "0")
+    const ss = String(seconds).padStart(2, "0")
+    timerDisplayEl.textContent = `${hh}:${mm}:${ss}`
+}
+
+function pauseTimer() {
+    if (!timerRunning || !timerStart) {
+        return
+    }
+    timerElapsedMs += Date.now() - timerStart
+    timerStart = null
+    timerRunning = false
+    if (timerIntervalId) {
+        clearInterval(timerIntervalId)
+        timerIntervalId = null
+    }
+    updateTimerDisplay()
+}
+
+function resumeTimer() {
+    if (timerRunning) {
+        return
+    }
+    timerStart = Date.now()
+    timerIntervalId = setInterval(updateTimerDisplay, 1000)
+    timerRunning = true
+    updateTimerDisplay()
+}
 
 //undo previous action (e.g decrease point and reverse set,game values)
 function undo() {
