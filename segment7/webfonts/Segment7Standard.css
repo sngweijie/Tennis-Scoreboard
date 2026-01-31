@@ -1,0 +1,8 @@
+@font-face
+{
+    font-family: 'Segment7Standard';
+  src: url('Segment7Standard.eot');
+      url('Segment7Standard.eot?#') format('embedded-opentype'),
+      url('Segment7Standard.woff') format('woff'),
+      url('Segment7Standard.ttf') format('truetype');
+}

@@ -1,12 +1,18 @@
 <html>
     <head>
         <link rel="stylesheet" href="index.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
     </head>
     <body>
         <h1 id="title">Tennis Scoreboard</h1>
-        <div id="board">
+        <div id="board" class="is-pregame">
             <div id="board-timer" aria-live="polite">
-                <span id="timer-display" class="timer-display">00:00:00</span>
+                <span id="timer-display" class="timer-display" aria-label="00:00:00">
+                    <span id="timer-hh">00</span><span class="timer-colon">:</span><span id="timer-mm">00</span><span class="timer-colon">:</span><span id="timer-ss">00</span>
+                </span>
+                <span id="tiebreak-indicator" class="tiebreak-indicator is-hidden" role="status" aria-live="polite">TIEBREAK</span>
             </div>
             <div id="board-top">
                 <div class="container">

@@ -1,3 +1,15 @@
+@font-face {
+    font-family: "Segment7Standard";
+    src: url("segment7/webfonts/Segment7Standard.eot");
+    src:
+        url("segment7/webfonts/Segment7Standard.eot?#iefix") format("embedded-opentype"),
+        url("segment7/webfonts/Segment7Standard.woff") format("woff"),
+        url("segment7/webfonts/Segment7Standard.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
     margin: 0;
     display: flex;
@@ -8,6 +20,8 @@ body {
 :root {
     --board-width: 550px;
     --board-height: auto;
+    --font-header: "Hanken Grotesk", "Segoe UI", Arial, sans-serif;
+    --font-ui: "Manrope", "Segoe UI", Arial, sans-serif;
 }
 
 #title {
@@ -16,6 +30,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
+    font-family: var(--font-header);
 }
 
 .container {
@@ -53,12 +68,35 @@ body {
     align-items: center;
     gap: 10px;
     padding: 6px 12px;
+    position: relative;
+    overflow: visible;
     border: 2px solid #0F172A;
     border-radius: 8px;
-    background: #0F172A;
+    background: #000000;
     color: #F8FAFC;
     font-weight: 700;
     letter-spacing: 0.5px;
+    margin-bottom: 20px;
+}
+
+.tiebreak-indicator {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #0F172A;
+    background: #FDE68A;
+    border: 1px solid #0F172A;
+    padding: 3px 8px;
+    border-radius: 999px;
+    position: absolute;
+    left: 50%;
+    bottom: -16px;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.tiebreak-indicator.is-hidden {
+    display: none;
 }
 
 .timer-label {
@@ -67,8 +105,19 @@ body {
 }
 
 .timer-display {
-    font-size: 24px;
+    font-size: 48px;
     font-variant-numeric: tabular-nums;
+    font-family: "Segment7Standard", monospace;
+    color: #F59E0B;
+}
+
+.timer-colon {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
+    color: #F59E0B;
+    margin: 0 2px;
+    position: relative;
+    top: -5px;
 }
 
 #board-top {
@@ -85,6 +134,29 @@ body {
   justify-content:space-around;
   gap: 20px;
   padding-top: 20px;
+}
+
+#board.is-pregame #board-btm {
+  justify-content: center;
+}
+
+#board.is-pregame #start-game-btn {
+  font-size: 16px;
+  padding: 10px 16px;
+}
+
+#board.is-pregame .serve-btn,
+#board.is-pregame .undo-btn {
+  display: none;
+}
+
+#board.is-pregame .serve-badge {
+  display: none;
+}
+
+#board.is-pregame .player-input.is-serving {
+  border-color: #0F172A;
+  box-shadow: none;
 }
 
 .counter {
@@ -180,6 +252,8 @@ body {
 .header {
     font-size: 13px;
     margin: 10px 0px 20px 0px;
+    font-family: var(--font-header);
+    letter-spacing: 0.4px;
 }
 
 .visually-hidden {
@@ -197,6 +271,7 @@ body {
   border-radius: 6px;
 
   font-weight: 600;
+  font-family: var(--font-ui);
   cursor: pointer;
 
   transition: 
@@ -225,6 +300,7 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 
   font-weight: 600;
+  font-family: var(--font-ui);
   cursor: pointer;
 
   transition: background-color 0.15s ease, transform 0.05s ease;
@@ -251,6 +327,7 @@ body {
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   font-weight: 600;
+  font-family: var(--font-ui);
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.05s ease;
 }
@@ -274,6 +351,7 @@ body {
   min-width: 120px;
   text-align: center;
   cursor: pointer;
+  font-family: var(--font-ui);
 
   transition: background-color 0.15s ease, transform 0.05s ease;
 }
@@ -308,16 +386,19 @@ body {
   padding: 18px 20px;
   width: min(360px, 90vw);
   box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  font-family: var(--font-ui);
 }
 
 .modal-title {
   margin: 0 0 6px 0;
   font-size: 18px;
+  font-family: var(--font-ui);
 }
 
 .modal-text {
   margin: 0 0 14px 0;
   font-size: 14px;
+  font-family: var(--font-ui);
 }
 
 .modal-actions {
@@ -332,6 +413,7 @@ body {
   padding: 8px 14px;
   font-weight: 600;
   cursor: pointer;
+  font-family: var(--font-ui);
 }
 
 .modal-btn-primary {

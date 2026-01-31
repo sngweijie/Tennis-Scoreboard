@@ -4,10 +4,10 @@
 //Undo button allows user to undo point which resets all values to before the point was increased
 //first player to win 2 sets out of 3, wins the game and display message mentioning the winner *to-do*
 //stretch goals
-//new game button resets *done*
+//new game button resets
 //new game confirmation popup
 //maybe can allow players to enter their name
-//timer *done*
+//timer 
 //highlight player who is serving
 //show toast feedback like "last point undone"
 //add tiebreak condition
@@ -27,11 +27,16 @@ let p1NameInput = document.getElementById("p1-name")
 let p2NameInput = document.getElementById("p2-name")
 let p1ServeBadge = document.getElementById("p1-serve-badge")
 let p2ServeBadge = document.getElementById("p2-serve-badge")
+let tiebreakIndicatorEl = document.getElementById("tiebreak-indicator")
 let startGameBtn = document.getElementById("start-game-btn")
+let boardEl = document.getElementById("board")
 let modalBackdrop = document.getElementById("modal-backdrop")
 let modalConfirmBtn = document.getElementById("modal-confirm")
 let modalCancelBtn = document.getElementById("modal-cancel")
 let timerDisplayEl = document.getElementById("timer-display")
+let timerHoursEl = document.getElementById("timer-hh")
+let timerMinutesEl = document.getElementById("timer-mm")
+let timerSecondsEl = document.getElementById("timer-ss")
 
 let gameStarted = false
 let lastFocusedEl = null
@@ -41,6 +46,9 @@ let timerIntervalId = null
 let timerElapsedMs = 0
 let timerRunning = false
 let server = "p1"
+let inTiebreak = false
+let tiebreakFirstServer = "p1"
+let tiebreakPointCount = 0
 
 let p1Point = 0,p2Point = 0,p1Games = 0,p2Games = 0, p1Sets = 0, p2Sets = 0, p1PrevSets1 = 
 0, p1PrevSets2 = 0, p2PrevSets1 = 0, p2PrevSets2 = 0, completeSets = 0 
@@ -75,7 +83,10 @@ function pushHistory() {
         p2PrevSets1,
         p2PrevSets2,
         completeSets,
-        server
+        server,
+        inTiebreak,
+        tiebreakFirstServer,
+        tiebreakPointCount
     })
 }
 
@@ -96,6 +107,11 @@ function updateServerUI() {
     p2NameInput.classList.toggle("is-serving", !p1Serving)
     p1ServeBadge.classList.toggle("is-hidden", !p1Serving)
     p2ServeBadge.classList.toggle("is-hidden", p1Serving)
+}
+
+function updateTiebreakIndicator() {
+    tiebreakIndicatorEl.classList.toggle("is-hidden", !inTiebreak)
+    tiebreakIndicatorEl.setAttribute("aria-hidden", (!inTiebreak).toString())
 }
 
 function toggleServer() {
@@ -127,49 +143,112 @@ function closeModal() {
 
 function gameP1(){
     p1Games += 1
-    if (p1Games == 6){
-        completeSets += 1
-        if (completeSets >= 2){
-            updateScoreSwipeLeft(p1PrevSets1El, p1PrevSets2)
-            updateScoreSwipeLeft(p2PrevSets1El, p2PrevSets2)
-            p1PrevSets1 = p1PrevSets2
-            p2PrevSets1 = p1PrevSets2
-        }
-        updateScoreSwipeLeft(p1PrevSets2El, p1Games)
-        updateScoreSwipeLeft(p2PrevSets2El, p2Games)
-        p1PrevSets2 = p1Games
-        p2PrevSets2 = p2Games
-        p1Sets += 1
-        p1Games = p2Games = 0
-        
-    }
     p1Point = p2Point = 0
     toggleServer()
+    if (p1Games >= 6 && p1Games - p2Games >= 2) {
+        finalizeSet("p1")
+        return
+    }
+    if (p1Games === 6 && p2Games === 6) {
+        startTiebreak()
+    }
 }
 function gameP2(){
     p2Games += 1
-    if (p2Games == 6){
-        if (completeSets >= 1){
-            updateScoreSwipeLeft(p1PrevSets1El, p1PrevSets2)
-            updateScoreSwipeLeft(p2PrevSets1El, p2PrevSets2)
-            p1PrevSets1 = p1PrevSets2
-            p2PrevSets1 = p1PrevSets2
-        }
-        updateScoreSwipeLeft(p1PrevSets2El, p1Games)
-        updateScoreSwipeLeft(p2PrevSets2El, p2Games)
-        p1PrevSets2 = p1Games
-        p2PrevSets2 = p2Games
-        p2Sets += 1
-        completeSets += 1
-        p1Games = p2Games = 0
-        
-    }
     p1Point = p2Point = 0
     toggleServer()
+    if (p2Games >= 6 && p2Games - p1Games >= 2) {
+        finalizeSet("p2")
+        return
+    }
+    if (p1Games === 6 && p2Games === 6) {
+        startTiebreak()
+    }
+}
+
+function finalizeSet(winner) {
+    if (completeSets >= 1) {
+        updateScoreSwipeLeft(p1PrevSets1El, p1PrevSets2)
+        updateScoreSwipeLeft(p2PrevSets1El, p2PrevSets2)
+        p1PrevSets1 = p1PrevSets2
+        p2PrevSets1 = p2PrevSets2
+    }
+    updateScoreSwipeLeft(p1PrevSets2El, p1Games)
+    updateScoreSwipeLeft(p2PrevSets2El, p2Games)
+    p1PrevSets2 = p1Games
+    p2PrevSets2 = p2Games
+    if (winner === "p1") {
+        p1Sets += 1
+    } else {
+        p2Sets += 1
+    }
+    completeSets += 1
+    p1Games = p2Games = 0
+    p1Point = p2Point = 0
+    updateScore()
+}
+
+function startTiebreak() {
+    inTiebreak = true
+    tiebreakFirstServer = server
+    tiebreakPointCount = 0
+    p1Point = 0
+    p2Point = 0
+    updateTiebreakIndicator()
+    updateScore()
+}
+
+function getTiebreakWinner() {
+    if (p1Point < 7 && p2Point < 7) {
+        return null
+    }
+    if (Math.abs(p1Point - p2Point) < 2) {
+        return null
+    }
+    return p1Point > p2Point ? "p1" : "p2"
+}
+
+function finishTiebreak(winner) {
+    inTiebreak = false
+    tiebreakPointCount = 0
+    if (winner === "p1") {
+        p1Games = 7
+        p2Games = 6
+    } else {
+        p2Games = 7
+        p1Games = 6
+    }
+    finalizeSet(winner)
+    server = tiebreakFirstServer === "p1" ? "p2" : "p1"
+    updateServerUI()
+    updateTiebreakIndicator()
+}
+
+function applyTiebreakPoint(winner) {
+    pushHistory()
+    if (winner === "p1") {
+        p1Point += 1
+    } else {
+        p2Point += 1
+    }
+    tiebreakPointCount += 1
+    const tiebreakWinner = getTiebreakWinner()
+    if (tiebreakWinner) {
+        finishTiebreak(tiebreakWinner)
+        return
+    }
+    if (tiebreakPointCount % 2 === 1) {
+        toggleServer()
+    }
+    updateScore()
 }
 
 //increase player 1 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP1() {
+    if (inTiebreak) {
+        applyTiebreakPoint("p1")
+        return
+    }
     pushHistory()
     if(p1Point==30){
         p1Point += 10
@@ -192,6 +271,10 @@ function addPointP1() {
 
 //increase player 2 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP2() {
+    if (inTiebreak) {
+        applyTiebreakPoint("p2")
+        return
+    }
     pushHistory()
     if(p2Point==30){
         p2Point += 10
@@ -219,7 +302,12 @@ function newGame() {
     p1PrevSets2 = p2PrevSets1 = p2PrevSets2 = completeSets = 0
     history = []
     server = "p1"
+    inTiebreak = false
+    tiebreakFirstServer = "p1"
+    tiebreakPointCount = 0
+    boardEl.classList.add("is-pregame")
     updateServerUI()
+    updateTiebreakIndicator()
     resetTimer()
     updateScore()
     updatePrevSets()
@@ -234,6 +322,7 @@ function startOrNewGame() {
         startTimer()
         startGameBtn.textContent = "New Game"
         gameStarted = true
+        boardEl.classList.remove("is-pregame")
         return
     }
     openModal()
@@ -304,6 +393,7 @@ function startTimer() {
 }
 
 updateServerUI()
+updateTiebreakIndicator()
 
 function resetTimer() {
     if (timerIntervalId) {
@@ -313,12 +403,18 @@ function resetTimer() {
     timerStart = null
     timerElapsedMs = 0
     timerRunning = false
-    timerDisplayEl.textContent = "00:00:00"
+    timerHoursEl.textContent = "00"
+    timerMinutesEl.textContent = "00"
+    timerSecondsEl.textContent = "00"
+    timerDisplayEl.setAttribute("aria-label", "00:00:00")
 }
 
 function updateTimerDisplay() {
     if (!timerStart && timerElapsedMs === 0) {
-        timerDisplayEl.textContent = "00:00:00"
+        timerHoursEl.textContent = "00"
+        timerMinutesEl.textContent = "00"
+        timerSecondsEl.textContent = "00"
+        timerDisplayEl.setAttribute("aria-label", "00:00:00")
         return
     }
     const liveElapsedMs = timerRunning && timerStart ? Date.now() - timerStart : 0
@@ -329,7 +425,10 @@ function updateTimerDisplay() {
     const hh = String(hours).padStart(2, "0")
     const mm = String(minutes).padStart(2, "0")
     const ss = String(seconds).padStart(2, "0")
-    timerDisplayEl.textContent = `${hh}:${mm}:${ss}`
+    timerHoursEl.textContent = hh
+    timerMinutesEl.textContent = mm
+    timerSecondsEl.textContent = ss
+    timerDisplayEl.setAttribute("aria-label", `${hh}:${mm}:${ss}`)
 }
 
 function pauseTimer() {
@@ -374,9 +473,13 @@ function undo() {
     p2PrevSets2 = prev.p2PrevSets2
     completeSets = prev.completeSets
     server = prev.server
+    inTiebreak = prev.inTiebreak
+    tiebreakFirstServer = prev.tiebreakFirstServer
+    tiebreakPointCount = prev.tiebreakPointCount
     updateScore()
     updatePrevSets()
     updateServerUI()
+    updateTiebreakIndicator()
 }
 
 
