@@ -29,6 +29,10 @@ let p1ServeBadge = document.getElementById("p1-serve-badge")
 let p2ServeBadge = document.getElementById("p2-serve-badge")
 let tiebreakIndicatorEl = document.getElementById("tiebreak-indicator")
 let startGameBtn = document.getElementById("start-game-btn")
+let p1PointBtn = document.getElementById("p1-point-btn")
+let p2PointBtn = document.getElementById("p2-point-btn")
+let serveBtn = document.getElementById("serve-btn")
+let undoBtn = document.getElementById("undo-btn")
 let boardEl = document.getElementById("board")
 let modalBackdrop = document.getElementById("modal-backdrop")
 let modalConfirmBtn = document.getElementById("modal-confirm")
@@ -327,6 +331,12 @@ function startOrNewGame() {
     }
     openModal()
 }
+
+startGameBtn.addEventListener("click", startOrNewGame)
+p1PointBtn.addEventListener("click", addPointP1)
+p2PointBtn.addEventListener("click", addPointP2)
+serveBtn.addEventListener("click", toggleServer)
+undoBtn.addEventListener("click", undo)
 
 modalConfirmBtn.addEventListener("click", () => {
     newGame()

@@ -91,17 +91,17 @@
                     <h5 class = "header visually-hidden" aria-hidden="true">Award Points</h5>  
                     </div>
                     <div>
-                        <button class="point-btn counter" onclick="addPointP1()">Point</button>
+                        <button id="p1-point-btn" class="point-btn counter">Point</button>
                     </div>
                     <div>
-                        <button class="point-btn counter" onclick="addPointP2()">Point</button>
+                        <button id="p2-point-btn" class="point-btn counter">Point</button>
                     </div>
                 </div>
             </div>
             <div id="board-btm">
-                <button id="start-game-btn" class="new-game-btn" onclick="startOrNewGame()">Start Game</button> 
-                <button class="serve-btn" onclick="toggleServer()">Toggle Serve</button>
-                <button class="undo-btn" onclick="undo()">↩ Undo</button>
+                <button id="start-game-btn" class="new-game-btn">Start Game</button> 
+                <button id="serve-btn" class="serve-btn">Toggle Serve</button>
+                <button id="undo-btn" class="undo-btn">↩ Undo</button>
             </div>
         </div>
         <div id="modal-backdrop" class="modal-backdrop" aria-hidden="true">
