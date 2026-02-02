@@ -63,6 +63,90 @@ body {
     
 }
 
+#board.has-winner {
+    position: relative;
+}
+
+.winner-banner {
+    position: absolute;
+    inset: 20% 8% auto 8%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.winner-banner.is-visible {
+    display: flex;
+    animation: banner-pop 260ms ease;
+}
+
+.winner-banner-inner {
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(135deg, #0F172A, #1E293B);
+    color: #F8FAFC;
+    border: 2px solid #F8FAFC;
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 18px 30px rgba(15, 23, 42, 0.35);
+    font-family: var(--font-header);
+    letter-spacing: 0.5px;
+}
+
+.winner-banner-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    opacity: 0.8;
+}
+
+.winner-banner-name {
+    font-size: 26px;
+    margin: 6px 0 4px 0;
+    font-weight: 700;
+}
+
+.winner-banner-subtitle {
+    font-size: 12px;
+    opacity: 0.75;
+    font-family: var(--font-ui);
+}
+
+.confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 4;
+    display: none;
+}
+
+.confetti-container.is-active {
+    display: block;
+}
+
+.confetti-piece {
+    position: absolute;
+    top: -10%;
+    width: 10px;
+    height: 16px;
+    opacity: 0.9;
+    border-radius: 2px;
+    animation: confetti-fall 2.3s linear forwards;
+}
+
+@keyframes confetti-fall {
+    0% { transform: translateY(-10vh) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(520deg); }
+}
+
+@keyframes banner-pop {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 #board-timer {
     display: flex;
     align-items: center;
@@ -290,6 +374,13 @@ body {
   box-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
+.point-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
 .undo-btn{
   background-color: #1F2937;   /* dark slate */
   color: white;
@@ -338,6 +429,12 @@ body {
 
 .serve-btn:active {
   transform: translateY(1px);
+}
+
+.serve-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .new-game-btn {
@@ -457,4 +554,6 @@ body {
 /* accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .swipe-out-left, .swipe-in { transition: none; }
+  .winner-banner.is-visible { animation: none; }
+  .confetti-piece { animation: none; }
 }

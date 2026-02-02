@@ -41,8 +41,12 @@ let timerDisplayEl = document.getElementById("timer-display")
 let timerHoursEl = document.getElementById("timer-hh")
 let timerMinutesEl = document.getElementById("timer-mm")
 let timerSecondsEl = document.getElementById("timer-ss")
+let winnerBannerEl = document.getElementById("winner-banner")
+let winnerNameEl = document.getElementById("winner-name")
+let confettiContainerEl = document.getElementById("confetti")
 
 let gameStarted = false
+let gameOver = false
 let lastFocusedEl = null
 let history = []
 let timerStart = null
@@ -190,6 +194,7 @@ function finalizeSet(winner) {
     p1Games = p2Games = 0
     p1Point = p2Point = 0
     updateScore()
+    updateWinnerDisplay(true)
 }
 
 function startTiebreak() {
@@ -249,6 +254,9 @@ function applyTiebreakPoint(winner) {
 
 //increase player 1 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP1() {
+    if (gameOver) {
+        return
+    }
     if (inTiebreak) {
         applyTiebreakPoint("p1")
         return
@@ -275,6 +283,9 @@ function addPointP1() {
 
 //increase player 2 points accordingly (15, 30 ,40, game, duece, adv, game)
 function addPointP2() {
+    if (gameOver) {
+        return
+    }
     if (inTiebreak) {
         applyTiebreakPoint("p2")
         return
@@ -310,6 +321,7 @@ function newGame() {
     tiebreakFirstServer = "p1"
     tiebreakPointCount = 0
     boardEl.classList.add("is-pregame")
+    clearWinner()
     updateServerUI()
     updateTiebreakIndicator()
     resetTimer()
@@ -404,6 +416,7 @@ function startTimer() {
 
 updateServerUI()
 updateTiebreakIndicator()
+updateWinnerDisplay(false)
 
 function resetTimer() {
     if (timerIntervalId) {
@@ -490,6 +503,7 @@ function undo() {
     updatePrevSets()
     updateServerUI()
     updateTiebreakIndicator()
+    updateWinnerDisplay(false)
 }
 
 
@@ -531,4 +545,80 @@ function updateScoreSwipeLeft(el, newText) {
       el.classList.remove("swipe-in");
     }, IN_MS);
   }, OUT_MS);
+}
+
+function getPlayerLabel(playerId) {
+    const rawName = playerId === "p1" ? p1NameInput.value : p2NameInput.value
+    const name = rawName.trim()
+    if (name) {
+        return name
+    }
+    return playerId === "p1" ? "Player 1" : "Player 2"
+}
+
+function updateWinnerDisplay(triggerEffects) {
+    const winnerId = p1Sets >= 2 ? "p1" : p2Sets >= 2 ? "p2" : null
+    if (!winnerId) {
+        clearWinner()
+        return
+    }
+    if (!gameOver) {
+        showWinner(winnerId, triggerEffects)
+        return
+    }
+    winnerNameEl.textContent = `${getPlayerLabel(winnerId)} wins!`
+}
+
+function showWinner(winnerId, triggerEffects) {
+    gameOver = true
+    gameStarted = true
+    boardEl.classList.remove("is-pregame")
+    boardEl.classList.add("has-winner")
+    startGameBtn.textContent = "New Game"
+    winnerBannerEl.classList.add("is-visible")
+    winnerBannerEl.setAttribute("aria-hidden", "false")
+    winnerNameEl.textContent = `${getPlayerLabel(winnerId)} wins!`
+    p1PointBtn.disabled = true
+    p2PointBtn.disabled = true
+    serveBtn.disabled = true
+    pauseTimer()
+    if (triggerEffects) {
+        launchConfetti()
+    }
+}
+
+function clearWinner() {
+    gameOver = false
+    boardEl.classList.remove("has-winner")
+    winnerBannerEl.classList.remove("is-visible")
+    winnerBannerEl.setAttribute("aria-hidden", "true")
+    confettiContainerEl.classList.remove("is-active")
+    confettiContainerEl.innerHTML = ""
+    p1PointBtn.disabled = false
+    p2PointBtn.disabled = false
+    serveBtn.disabled = false
+}
+
+function launchConfetti() {
+    confettiContainerEl.innerHTML = ""
+    confettiContainerEl.classList.add("is-active")
+    const colors = ["#F97316", "#38BDF8", "#FACC15", "#22C55E", "#E879F9", "#F43F5E"]
+    const pieceCount = 60
+    for (let i = 0; i < pieceCount; i++) {
+        const piece = document.createElement("div")
+        piece.className = "confetti-piece"
+        const color = colors[i % colors.length]
+        const left = Math.random() * 100
+        const delay = Math.random() * 0.4
+        const duration = 1.8 + Math.random() * 1.4
+        piece.style.left = `${left}%`
+        piece.style.backgroundColor = color
+        piece.style.animationDelay = `${delay}s`
+        piece.style.animationDuration = `${duration}s`
+        confettiContainerEl.appendChild(piece)
+    }
+    window.setTimeout(() => {
+        confettiContainerEl.classList.remove("is-active")
+        confettiContainerEl.innerHTML = ""
+    }, 2600)
 }

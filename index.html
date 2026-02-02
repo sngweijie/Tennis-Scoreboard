@@ -103,6 +103,14 @@
                 <button id="serve-btn" class="serve-btn">Toggle Serve</button>
                 <button id="undo-btn" class="undo-btn">↩ Undo</button>
             </div>
+            <div id="winner-banner" class="winner-banner" role="status" aria-live="polite" aria-hidden="true">
+                <div class="winner-banner-inner">
+                    <div class="winner-banner-title">Match Point</div>
+                    <div id="winner-name" class="winner-banner-name">Player wins!</div>
+                    <div class="winner-banner-subtitle">Best of 3 sets</div>
+                </div>
+            </div>
+            <div id="confetti" class="confetti-container" aria-hidden="true"></div>
         </div>
         <div id="modal-backdrop" class="modal-backdrop" aria-hidden="true">
             <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -114,6 +122,6 @@
                 </div>
             </div>
         </div>
-        <script src="index.js" type="module"></script>
+        <script src="index.js" ></script>
     </body>
 </html>
