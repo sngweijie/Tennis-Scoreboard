@@ -318,14 +318,24 @@ function addPointP2() {
 
 //resets points
 function newGame() {
-    p1Point = p2Point = p1Games = p2Games = p1Sets = p2Sets = p1PrevSets1 = 
-    p1PrevSets2 = p2PrevSets1 = p2PrevSets2 = completeSets = 0
+    p1Point = 0
+    p2Point = 0
+    p1Games = 0
+    p2Games = 0
+    p1Sets = 0
+    p2Sets = 0
+    p1PrevSets1 = 0
+    p1PrevSets2 = 0
+    p2PrevSets1 = 0
+    p2PrevSets2 = 0
+    completeSets = 0
     history = []
     server = "p1"
     inTiebreak = false
     tiebreakFirstServer = "p1"
     tiebreakPointCount = 0
     boardEl.classList.add("is-pregame")
+    gameStarted = false
     setPointButtonsEnabled(false)
     clearWinner()
     updateServerUI()
