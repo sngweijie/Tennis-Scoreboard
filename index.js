@@ -109,6 +109,11 @@ function unlockPlayerNames() {
     p1NameInput.focus()
 }
 
+function setPointButtonsEnabled(isEnabled) {
+    p1PointBtn.disabled = !isEnabled
+    p2PointBtn.disabled = !isEnabled
+}
+
 function updateServerUI() {
     const p1Serving = server === "p1"
     p1NameInput.classList.toggle("is-serving", p1Serving)
@@ -321,6 +326,7 @@ function newGame() {
     tiebreakFirstServer = "p1"
     tiebreakPointCount = 0
     boardEl.classList.add("is-pregame")
+    setPointButtonsEnabled(false)
     clearWinner()
     updateServerUI()
     updateTiebreakIndicator()
@@ -339,6 +345,7 @@ function startOrNewGame() {
         startGameBtn.textContent = "New Game"
         gameStarted = true
         boardEl.classList.remove("is-pregame")
+        setPointButtonsEnabled(true)
         return
     }
     openModal()
@@ -417,6 +424,7 @@ function startTimer() {
 updateServerUI()
 updateTiebreakIndicator()
 updateWinnerDisplay(false)
+setPointButtonsEnabled(false)
 
 function resetTimer() {
     if (timerIntervalId) {
@@ -578,8 +586,7 @@ function showWinner(winnerId, triggerEffects) {
     winnerBannerEl.classList.add("is-visible")
     winnerBannerEl.setAttribute("aria-hidden", "false")
     winnerNameEl.textContent = `${getPlayerLabel(winnerId)} wins!`
-    p1PointBtn.disabled = true
-    p2PointBtn.disabled = true
+    setPointButtonsEnabled(false)
     serveBtn.disabled = true
     pauseTimer()
     if (triggerEffects) {
@@ -594,8 +601,7 @@ function clearWinner() {
     winnerBannerEl.setAttribute("aria-hidden", "true")
     confettiContainerEl.classList.remove("is-active")
     confettiContainerEl.innerHTML = ""
-    p1PointBtn.disabled = false
-    p2PointBtn.disabled = false
+    setPointButtonsEnabled(gameStarted)
     serveBtn.disabled = false
 }
 
